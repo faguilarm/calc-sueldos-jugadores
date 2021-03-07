@@ -53,9 +53,17 @@ const obtenerGolesEquipos = jugadores =>
     [jugador.equipo]: (equipos[jugador.equipo] || 0) + jugador.goles
   }), {});
 
+const obtenerSueldosJugadores = jugadores =>
+  jugadores.map(jugador => ({
+    ...jugador,
+    sueldo_completo: jugador.sueldo + (jugador.bono * (jugador.goles/METAS[jugador.nivel]))
+  }));
+
 function calcularSueldos({jugadores}) {
   const golesEquipos = obtenerGolesEquipos(jugadores);
   console.log("golesEquipos", golesEquipos);
+  const sueldos = obtenerSueldosJugadores(jugadores);
+  console.log(sueldos);
 }
 
 calcularSueldos(INPUT);
