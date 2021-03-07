@@ -47,10 +47,13 @@ const INPUT = {
   ]
 };
 
-const obtenerGolesEquipos = jugadores =>
+const obtenerStatsEquipos = jugadores =>
   jugadores.reduce((equipos, jugador) => ({
     ...equipos,
-    [jugador.equipo]: (equipos[jugador.equipo] || 0) + jugador.goles
+    [jugador.equipo]: {
+      goles: ((equipos[jugador.equipo] && equipos[jugador.equipo].goles) || 0) + jugador.goles,
+      meta: ((equipos[jugador.equipo] && equipos[jugador.equipo].meta) || 0) + METAS[jugador.nivel]
+    }
   }), {});
 
 const obtenerSueldosJugadores = jugadores =>
@@ -60,8 +63,8 @@ const obtenerSueldosJugadores = jugadores =>
   }));
 
 function calcularSueldos({jugadores}) {
-  const golesEquipos = obtenerGolesEquipos(jugadores);
-  console.log("golesEquipos", golesEquipos);
+  const statsEquipos = obtenerStatsEquipos(jugadores);
+  console.log("statsEquipos", statsEquipos);
   const sueldos = obtenerSueldosJugadores(jugadores);
   console.log(sueldos);
 }
