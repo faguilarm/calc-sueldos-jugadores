@@ -56,16 +56,19 @@ const obtenerStatsEquipos = jugadores =>
     }
   }), {});
 
-const obtenerSueldosJugadores = jugadores =>
+const obtenerSueldosJugadores = (jugadores, stats) =>
   jugadores.map(jugador => ({
     ...jugador,
-    sueldo_completo: jugador.sueldo + (jugador.bono * (jugador.goles/METAS[jugador.nivel]))
+    sueldo_completo:
+      jugador.sueldo +
+      ((jugador.bono * (jugador.goles/METAS[jugador.nivel])) * 0.5) +
+      ((jugador.bono * (stats[jugador.equipo].goles/stats[jugador.equipo].meta)) * 0.5)
   }));
 
 function calcularSueldos({jugadores}) {
   const statsEquipos = obtenerStatsEquipos(jugadores);
   console.log("statsEquipos", statsEquipos);
-  const sueldos = obtenerSueldosJugadores(jugadores);
+  const sueldos = obtenerSueldosJugadores(jugadores, statsEquipos);
   console.log(sueldos);
 }
 
