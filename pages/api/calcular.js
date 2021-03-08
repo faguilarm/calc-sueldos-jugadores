@@ -1,5 +1,5 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { calcularSueldos } from "../../utils/calculadora";
 
 export default (req, res) => {
-  res.status(200).json({ name: 'John Doe' })
+  res.status(200).json(calcularSueldos(req.body));
 }

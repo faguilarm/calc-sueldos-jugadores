@@ -1,65 +1,73 @@
+import React from "react";
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
+
+  const [samples, setSamples] = React.useState([]);
+  const [selected, setSelected] = React.useState("");
+  const [jsonInput, setJsonInput] = React.useState("");
+  const [jsonOutput, setJsonOutput] = React.useState("");
+
+  React.useEffect(() => {
+    fetchSamples();
+  }, []);
+
+  const fetchSamples = async () => {
+    const req = await fetch("/api/samples");
+    const data = await req.json();
+    setSamples(data);
+  };
+
+  const fetchCalc = async () => {
+    const req = await fetch("/api/calcular", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: jsonInput
+    });
+    const data = await req.json();
+    setJsonOutput(JSON.stringify(data, null, 2));
+  };
+
+  const handleSelect = (event) => {
+    setSelected(event.target.value);
+    setJsonInput(event.target.value? JSON.stringify(samples[event.target.value].value, null, 2) : "");
+  };
+
+  const handleClick = (event) => {
+    try {
+      JSON.parse(jsonInput);
+      fetchCalc();
+    } catch (error) {
+      alert("No es un documento JSON válido");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>Calculadora de Sueldos</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+      <div className={styles.main}>
+        <div>
+          <select value={selected} onChange={handleSelect}>
+          <option value=""></option>
+            {samples.map((sample, index) =>
+              <option key={index} value={index}>{sample.label}</option>
+            )}
+          </select>
+          <textarea
+            value={jsonInput} placeholder="Ingresar JSON con los datos de entrada"
+            onChange={event => setJsonInput(event.target.value)}>
+          </textarea>
         </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+        <button onClick={handleClick}>
+          Calcular
+        </button>
+        <textarea value={jsonOutput} readOnly></textarea>
+      </div>      
     </div>
   )
 }
