@@ -5,6 +5,8 @@ const METAS = {
   "Cuauh": 20
 };
 
+const FACTOR_BONO_INDIVIDUAL = 0.5;
+
 const INPUT = {
   "jugadores" : [  
      {  
@@ -47,29 +49,34 @@ const INPUT = {
   ]
 };
 
+const calcularFactorBono = (goles, meta) => goles > meta ? 1 : goles / meta;
+
 const obtenerStatsEquipos = jugadores =>
-  jugadores.reduce((equipos, jugador) => ({
-    ...equipos,
-    [jugador.equipo]: {
-      goles: ((equipos[jugador.equipo] && equipos[jugador.equipo].goles) || 0) + jugador.goles,
-      meta: ((equipos[jugador.equipo] && equipos[jugador.equipo].meta) || 0) + METAS[jugador.nivel]
-    }
-  }), {});
+  jugadores.reduce((stats, jugador) => {
+    const updatedStats = {
+      ...stats,
+      [jugador.equipo]: {
+        goles: ((stats[jugador.equipo] && stats[jugador.equipo].goles) || 0) + jugador.goles,
+        meta: ((stats[jugador.equipo] && stats[jugador.equipo].meta) || 0) + METAS[jugador.nivel]
+      }
+    };
+    updatedStats[jugador.equipo].factorBono = calcularFactorBono(updatedStats[jugador.equipo].goles, updatedStats[jugador.equipo].meta);
+    return updatedStats;
+  }, {});
 
 const obtenerSueldosJugadores = (jugadores, stats) =>
   jugadores.map(jugador => ({
     ...jugador,
     sueldo_completo:
       jugador.sueldo +
-      ((jugador.bono * (jugador.goles/METAS[jugador.nivel])) * 0.5) +
-      ((jugador.bono * (stats[jugador.equipo].goles/stats[jugador.equipo].meta)) * 0.5)
+      (jugador.bono * calcularFactorBono(jugador.goles, METAS[jugador.nivel]) * FACTOR_BONO_INDIVIDUAL) +
+      (jugador.bono * stats[jugador.equipo].factorBono * (1 - FACTOR_BONO_INDIVIDUAL))
   }));
 
 function calcularSueldos({jugadores}) {
   const statsEquipos = obtenerStatsEquipos(jugadores);
   console.log("statsEquipos", statsEquipos);
-  const sueldos = obtenerSueldosJugadores(jugadores, statsEquipos);
-  console.log(sueldos);
+  return obtenerSueldosJugadores(jugadores, statsEquipos);
 }
 
-calcularSueldos(INPUT);
+console.log(calcularSueldos(INPUT));
