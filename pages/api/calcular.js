@@ -1,5 +1,9 @@
 import { calcularSueldos } from "../../utils/calculadora";
 
 export default (req, res) => {
-  res.status(200).json(calcularSueldos(req.body));
+  try {
+    res.status(200).json(calcularSueldos(req.body));
+  } catch (error) {
+    res.status(500).send(error);
+  }
 }

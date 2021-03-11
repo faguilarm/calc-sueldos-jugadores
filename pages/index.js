@@ -20,13 +20,23 @@ export default function Home() {
   };
 
   const fetchCalc = async () => {
-    const req = await fetch("/api/calcular", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: jsonInput
-    });
-    const data = await req.json();
-    setJsonOutput(JSON.stringify(data, null, 2));
+    try {
+      const req = await fetch("/api/calcular", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonInput
+      });
+      if(req.status === 200) {
+        const data = await req.json();
+        setJsonOutput(JSON.stringify(data, null, 2));
+      } else {
+        setJsonOutput("");
+        alert(await req.text())
+      }
+    } catch(error) {
+      console.error(error);
+      alert("Ocurrió un error en el proceso de cálculo");
+    }
   };
 
   const handleSelect = (event) => {
@@ -51,22 +61,23 @@ export default function Home() {
       </Head>
 
       <div className={styles.main}>
-        <div>
-          <select value={selected} onChange={handleSelect}>
+        <select value={selected} onChange={handleSelect}>
           <option value=""></option>
-            {samples.map((sample, index) =>
-              <option key={index} value={index}>{sample.label}</option>
-            )}
-          </select>
+          {samples.map((sample, index) =>
+            <option key={index} value={index}>{sample.label}</option>
+          )}
+        </select>
+
+        <div>
           <textarea
             value={jsonInput} placeholder="Ingresar JSON con los datos de entrada"
             onChange={event => setJsonInput(event.target.value)}>
           </textarea>
-        </div>
-        <button onClick={handleClick}>
+          <button onClick={handleClick}>
           Calcular
-        </button>
-        <textarea value={jsonOutput} readOnly></textarea>
+          </button>
+          <textarea value={jsonOutput} readOnly></textarea>
+        </div>
       </div>      
     </div>
   )

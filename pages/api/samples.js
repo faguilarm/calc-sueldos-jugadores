@@ -1,9 +1,9 @@
-const sample1 = require("../../utils/samples/simple1.json");
-const sample2 = require("../../utils/samples/simple2.json");
+const simple = require("../../utils/samples/simple.json");
+const equipos = require("../../utils/samples/equipos.json");
 
 export default (req, res) => {
   res.status(200).json([
-    { "label": "sample1", "value": sample1 },
-    { "label": "sample2", "value": sample2 }
+    { "label": "Ejemplo 1: Lista única de jugadores (metas por default)", "value": simple },
+    { "label": "Ejemplo 2: Lista de equipos con metas personalizadas", "value": equipos }
   ]);
 }

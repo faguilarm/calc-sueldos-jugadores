@@ -52,14 +52,12 @@ const obtenerSueldosSimple = ({jugadores}) => {
     ...equipos,
     [jugador.equipo]: [...(equipos[jugador.equipo] || []), jugador]
   }), {});
-  //console.log("jugadores agrupados en equipos", jugadoresAgrupados);
   const statsEquipos =
     Object.entries(jugadoresAgrupados)
       .reduce((equipos, [equipo, jugadores]) => ({
         ...equipos,
-        [equipo]: calcularFactorBono(obtenerStatsEquipo(jugadores))
+        [equipo]: calcularFactorBono(obtenerStatsEquipo(jugadores, METAS_DEFAULT))
       }), {});
-  //console.log("statsEquipos", statsEquipos);
   return {
     jugadores: jugadores.map(jugador => obtenerSueldoJugador(jugador, statsEquipos[jugador.equipo], METAS_DEFAULT))
   };
@@ -73,9 +71,7 @@ const obtenerStatsEquipo = (jugadores, metas) =>
 
 const obtenerSueldosEquipos = ({equipos}) => ({
   equipos: equipos.map(({nombre, metas, jugadores}) => {
-    console.log(nombre,metas);
     const factorBonoEquipo = calcularFactorBono(obtenerStatsEquipo(jugadores, metas));
-    //console.log("factorBonoEquipo", nombre, factorBonoEquipo);
     return {
       nombre,
       jugadores: jugadores.map(jugador => obtenerSueldoJugador(jugador, factorBonoEquipo, metas))
@@ -89,7 +85,7 @@ function calcularSueldos(datos) {
   } else if(validarObj(datos, ESQUEMA_EQUIPOS)) {
     return obtenerSueldosEquipos(datos);
   }
-  return "ESTRUCTURA INVÁLIDA";
+  throw "ESTRUCTURA INVÁLIDA";
 }
 
 module.exports = {
