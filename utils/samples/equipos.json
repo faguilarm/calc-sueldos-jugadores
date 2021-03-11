@@ -1,0 +1,90 @@
+{
+   "equipos" : [
+      {
+         "nombre": "Resuelve FC",
+         "metas": {
+            "A": 10,
+            "B": 15,
+            "C": 20,
+            "Cuauh": 30
+         },
+         "jugadores" : [  
+            {  
+               "nombre":"Luis Perez",
+               "nivel":"C",
+               "goles":16,
+               "sueldo":50000,
+               "bono":25000,
+               "sueldo_completo":null
+            },
+            {  
+               "nombre":"EL Cuauh",
+               "nivel":"Cuauh",
+               "goles":32,
+               "sueldo":100000,
+               "bono":30000,
+               "sueldo_completo":null
+            },
+            {  
+               "nombre":"Cosme Fulanito",
+               "nivel":"A",
+               "goles":14,
+               "sueldo":20000,
+               "bono":10000,
+               "sueldo_completo":null
+            },
+            {  
+               "nombre":"El Rulo",
+               "nivel":"B",
+               "goles":10,
+               "sueldo":30000,
+               "bono":15000,
+               "sueldo_completo":null
+            }
+         ]
+      },
+      {
+         "nombre": "Banco Patito",
+         "metas": {
+            "A": 6,
+            "B": 12,
+            "C": 18,
+            "Cuauh": 24
+         },
+         "jugadores" : [
+            {
+               "nombre":"Jorge Veloz",
+               "nivel":"C",
+               "goles":12,
+               "sueldo":20000,
+               "bono":10000,
+               "sueldo_completo":null
+            },
+            {
+               "nombre":"El champion",
+               "nivel":"Cuauh",
+               "goles":22,
+               "sueldo":80000,
+               "bono":20000,
+               "sueldo_completo":null
+            },
+            {  
+               "nombre":"Jose Feliciano",
+               "nivel":"A",
+               "goles":5,
+               "sueldo":10000,
+               "bono":10000,
+               "sueldo_completo":null
+            },
+            {  
+               "nombre":"Nelson JR",
+               "nivel":"B",
+               "goles":16,
+               "sueldo":15000,
+               "bono":10000,
+               "sueldo_completo":null
+            }
+         ]
+      }
+   ]
+}
