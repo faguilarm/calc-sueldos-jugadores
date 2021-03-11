@@ -1,4 +1,30 @@
-const METAS = {
+const { validarObj } = require("./validadorJson");
+
+const ESQUEMA_SIMPLE = {
+  "jugadores": {
+    "type": "array",
+    "of": { "nombre":"string", "nivel":"string", "goles":"number", "sueldo":"number", "bono":"number", "equipo":"string" }
+  }
+};
+
+const ESQUEMA_EQUIPOS = {
+  "equipos": {
+    "type": "array",
+    "of": {
+      "nombre": "string",
+      "metas": {
+        "type": "object",
+        "of": { "A":"number", "B":"number", "C":"number", "Cuauh":"number" }
+      },
+      "jugadores": {
+        "type": "array",
+        "of": { "nombre":"string", "nivel":"string", "goles":"number", "sueldo":"number", "bono":"number" }
+      }
+    }
+  }
+};
+
+const METAS_DEFAULT = {
   "A": 5,
   "B": 10,
   "C": 15,
@@ -7,33 +33,63 @@ const METAS = {
 
 const FACTOR_BONO_INDIVIDUAL = 0.5;
 
-const calcularFactorBono = (goles, meta) => goles > meta ? 1 : goles / meta;
+const calcularFactorBono = ({goles, meta}) => goles > meta ? 1 : goles / meta;
 
-const obtenerStatsEquipos = jugadores =>
-  jugadores.reduce((stats, jugador) => {
-    const updatedStats = {
-      ...stats,
-      [jugador.equipo]: {
-        goles: ((stats[jugador.equipo] && stats[jugador.equipo].goles) || 0) + jugador.goles,
-        meta: ((stats[jugador.equipo] && stats[jugador.equipo].meta) || 0) + METAS[jugador.nivel]
-      }
-    };
-    updatedStats[jugador.equipo].factorBono = calcularFactorBono(updatedStats[jugador.equipo].goles, updatedStats[jugador.equipo].meta);
-    return updatedStats;
-  }, {});
+const truncarMonto = monto => Math.trunc(monto * 100) / 100;
 
-const obtenerSueldosJugadores = (jugadores, stats) =>
-  jugadores.map(jugador => ({
-    ...jugador,
-    sueldo_completo:
+const obtenerSueldoJugador = (jugador, factorBonoEquipo, metas) => ({
+  ...jugador,
+  sueldo_completo:
+    truncarMonto(
       jugador.sueldo +
-      (jugador.bono * calcularFactorBono(jugador.goles, METAS[jugador.nivel]) * FACTOR_BONO_INDIVIDUAL) +
-      (jugador.bono * stats[jugador.equipo].factorBono * (1 - FACTOR_BONO_INDIVIDUAL))
-  }));
+      (jugador.bono * calcularFactorBono({goles: jugador.goles, meta: metas[jugador.nivel]}) * FACTOR_BONO_INDIVIDUAL) +
+      (jugador.bono * factorBonoEquipo * (1 - FACTOR_BONO_INDIVIDUAL))
+    )
+});
 
-function calcularSueldos({jugadores}) {
-  const statsEquipos = obtenerStatsEquipos(jugadores);
-  return obtenerSueldosJugadores(jugadores, statsEquipos);
+const obtenerSueldosSimple = ({jugadores}) => {
+  const jugadoresAgrupados = jugadores.reduce((equipos, jugador) => ({
+    ...equipos,
+    [jugador.equipo]: [...(equipos[jugador.equipo] || []), jugador]
+  }), {});
+  //console.log("jugadores agrupados en equipos", jugadoresAgrupados);
+  const statsEquipos =
+    Object.entries(jugadoresAgrupados)
+      .reduce((equipos, [equipo, jugadores]) => ({
+        ...equipos,
+        [equipo]: calcularFactorBono(obtenerStatsEquipo(jugadores))
+      }), {});
+  //console.log("statsEquipos", statsEquipos);
+  return {
+    jugadores: jugadores.map(jugador => obtenerSueldoJugador(jugador, statsEquipos[jugador.equipo], METAS_DEFAULT))
+  };
+};
+
+const obtenerStatsEquipo = (jugadores, metas) =>
+  jugadores.reduce((stats, jugador) => ({
+    goles: (stats.goles || 0) + jugador.goles,
+    meta: (stats.meta || 0) + metas[jugador.nivel]
+  }), {});
+
+const obtenerSueldosEquipos = ({equipos}) => ({
+  equipos: equipos.map(({nombre, metas, jugadores}) => {
+    console.log(nombre,metas);
+    const factorBonoEquipo = calcularFactorBono(obtenerStatsEquipo(jugadores, metas));
+    //console.log("factorBonoEquipo", nombre, factorBonoEquipo);
+    return {
+      nombre,
+      jugadores: jugadores.map(jugador => obtenerSueldoJugador(jugador, factorBonoEquipo, metas))
+    };
+  })
+});
+
+function calcularSueldos(datos) {
+  if(validarObj(datos, ESQUEMA_SIMPLE)) {
+    return obtenerSueldosSimple(datos);
+  } else if(validarObj(datos, ESQUEMA_EQUIPOS)) {
+    return obtenerSueldosEquipos(datos);
+  }
+  return "ESTRUCTURA INVÁLIDA";
 }
 
 module.exports = {
