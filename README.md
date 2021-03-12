@@ -2,7 +2,9 @@
 
 ## Introducción
 
-Este proyecto contiene una solución a la prueba de ingeniería de Resuelve, disponible en: [https://github.com/resuelve/prueba-ing-backend](https://github.com/resuelve/prueba-ing-backend)
+Este proyecto contiene una solución a la prueba de ingeniería de Resuelve, disponible en: [https://github.com/resuelve/prueba-ing-backend](https://github.com/resuelve/prueba-ing-backend).
+
+El proyecto en ejecución está disponible en [https://resuelveing-faguilarm.vercel.app/](https://resuelveing-faguilarm.vercel.app/).
 
 En las siguientes secciones se listan los aspectos más relevantes de esta solución así como la forma de ponerla en ejecución.
 
